@@ -48,6 +48,7 @@ void draw() {
 
   noTint();
   image(img3,0,0);
+  printArray(img2.pixels);
 }
 
 // pour les macs
@@ -195,7 +196,7 @@ void mouseDragged(){
     for (int j=1; j<img2.height-1; j++)
       for (int i=1; i<img2.width-1; i++){
         if (alpha(img2.pixels[i+j*img2.width])>128)
-          img2.pixels[i+j*img2.width] = color(0,0,0, 255);
+          img2.pixels[i+j*img2.width] = color(128,0,0, 255);
       }
     
     img2.updatePixels();
@@ -206,5 +207,16 @@ void mouseDragged(){
 void mouseReleased(){
   if (iniMouseX>=0){
    //etape 3 et 4
+   img3.beginDraw();
+   //img3.noFill();
+   for (int j=1; j<img2.height-1; j++)
+      for (int i=1; i<img2.width-1; i++){
+        if (alpha(img2.pixels[i+j*img2.width])>128 ){
+            img3.line(i, j, mouseX, mouseY);
+            print(i);
+        }
+      }
+   //img3.line(120, 80, 340, 300);;
+   img3.endDraw();
   }
 }
