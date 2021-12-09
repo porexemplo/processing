@@ -105,10 +105,11 @@ void mousePressed() {
   }
 }
 
-void mouseDragged(){
-  if (mouseButton == LEFT){
+void mouseDragged() {
+  if (mouseButton == LEFT) {
     // on rajoute un point de drag&drop dans la selection
-    col = init_image.pixels[mouseX+mouseY*init_image.width];
+    // NOTE : image.pixels returns a 1 dimesion array with the image pixels
+    col = init_image.pixels[mouseX + mouseY * init_image.width];
     maxRed = minRed = red(col);
     maxGreen = minGreen = green(col);
     maxBlue = minBlue = blue(col);
@@ -120,7 +121,7 @@ void mouseDragged(){
     
     // on ne garde en memoire que les 25 derniers points pour pas trop 
     // rajouter de travail
-    if (lastMousePoints.size()>25)
+    if (lastMousePoints.size() > 25)
       lastMousePoints.remove(lastMousePoints.size()-1);
     lastMousePoints.add(0,new PVector(mouseX, mouseY, col));
     
@@ -200,9 +201,9 @@ void mouseDragged(){
     //etape2.2
     // ici on peut bidouiller les couleurs des pixels selectionnes
     // en fonction de leur position ou de leur voisin
-    for (int j=1; j<selected_image.height-1; j++)
-      for (int i=1; i<selected_image.width-1; i++){
-        if (alpha(selected_image.pixels[i+j*selected_image.width])>128)
+    for (int j = 1; j < selected_image.height - 1; j++)
+      for (int i = 1; i < selected_image.width - 1; i++){
+        if (alpha(selected_image.pixels[i+j*selected_image.width]) > 128)
           selected_image.pixels[i+j*selected_image.width] = color(128,0,0, 255);
       }
     
@@ -216,9 +217,9 @@ void mouseReleased(){
    //etape 3 et 4
    hair_image.beginDraw();
    //hair_image.noFill();
-   for (int j=1; j<selected_image.height-1; j++)
-      for (int i=1; i<selected_image.width-1; i++){
-        if (alpha(selected_image.pixels[i+j*selected_image.width])>128 ){
+   for (int j = 1; j < selected_image.height - 1; j++)
+      for (int i = 1; i < selected_image.width - 1; i++){
+        if (alpha(selected_image.pixels[i+j*selected_image.width]) > 128 ){
             hair_image.line(i, j, mouseX, mouseY);
             // print(i);
         }
