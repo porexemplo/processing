@@ -1,37 +1,31 @@
-/**
- * default variables : frameCount, 
- */
-
-PImage init_image, selected_image;
-PGraphics hair_image;
+PImage init_img, selected_img;
+PGraphics hair_img;
 
 int col = color(255,0,0);
 int selpix = 0;
 int iniMouseX, iniMouseY;
-float minRed, maxRed, minGreen, maxGreen, minBlue, maxBlue;
-float minHue, maxHue, minSaturation, maxSaturation, minbr, maxbr;
-int minX, minY, maxX, maxY;
-int minX0, minY0, maxX0, maxY0;
+float minr, maxr, ming, maxg, minb, maxb;
+float minh, maxh, mins, maxs, minbr, maxbr;
+int minx, miny, maxx, maxy;
+int minx0, miny0, maxx0, maxy0;
 ArrayList<PVector> lastMousePoints = new  ArrayList<PVector>();
-boolean alt = false; // used to add macOS support
+boolean alt = false;
 
 void setup() {
-
   size(820,761);
   
-  // loading initial image
-  init_image = loadImage("skunk.png");
-  init_image.loadPixels();
+  // l'image de depart
+  init_img = loadImage("skunk.png");
+  init_img.loadPixels();
   
-  // drawing selected zone - same area as init_image
-  selected_image = createImage(init_image.width, init_image.height, ARGB);
-  selected_image.loadPixels();
+  // pour dessiner la zone selectionnee
+  selected_img = createImage(init_img.width, init_img.height, ARGB);
+  selected_img.loadPixels();
   
-  // drawing hairs
-  hair_image = createGraphics(init_image.width, init_image.height);
+  // pour dessiner les poils
+  hair_img = createGraphics(init_img.width, init_img.height);
 
   pixelDensity(displayDensity());
-  // setting background as white -> init_image is a png
   background(255);
   frameRate(10);
 }
@@ -39,89 +33,86 @@ void setup() {
 
 void draw() {
   background(255);
-  noTint(); // no tint for init_image
-  image(init_image, 0, 0);
+  noTint();
+  image(init_img,0,0);
   
-  // etape 2.3
-  // tint can be adjusted here to create less binary animations
-  if (frameCount % 2==0) {
-    tint(255, 255, 255, 64); // tint for selected_image
-  } else {
+  //etape 2.3
+  // ici on peut jouer sur la teinture de l'image pour faire une
+  // animation moins binaire
+  if(frameCount%2==0) {
+    tint(255, 255, 255, 64);
+  }else {
     tint(255, 255, 255, 192);
   }
-
-  image(selected_image, 0, 0);
+  image(selected_img,0,0); 
 
   noTint();
-  image(hair_image,0,0);
-  // printArray(selected_image.pixels);
+  image(hair_img,0,0);
 }
 
-// adding macOS support for rightClick
-/*
+// pour les macs
 void keyPressed() {
   if (key == CODED && keyCode == ALT)
-    alt = true;
+    alt=true;
 }
 
 void keyReleased() {
   if (key == CODED && keyCode == ALT)
-    alt = false;
+    alt=false;
 }
-*/
 
 
-void mousePressed() {
-  if (mouseButton == LEFT) {
-    // NOTE : if pressed left button (either simple press || drag & drop), selection is restarted
+void mousePressed(){
+  if (mouseButton == LEFT){
+    // si on commence un drag & drop avec le bouton gauche, on selectionne 
     iniMouseX = -1;
     lastMousePoints.clear();
-    col = init_image.pixels[mouseX + mouseY * init_image.width];
+    col = init_img.pixels[mouseX+mouseY*init_img.width];
 
-    // NOTE : resetting all selection stats variables to zero
-    maxRed = minRed = red(col);
-    maxGreen = minGreen = green(col);
-    maxBlue = minBlue = blue(col);
-    minHue = maxHue = hue(col);
-    minSaturation = saturation(col);
-    minX = maxX = mouseX;
-    minY = maxY = mouseY;
-    minX0 = maxX0 = mouseX;
-    minY0 = maxY0 = mouseY;
+    // on recommence toute la selection  donc on remet a zero toutes les variables
+    // qui concernent les stats de la selection
+    maxr = minr = red(col);
+    maxg = ming = green(col);
+    maxb = minb = blue(col);
+    minh = hue(col);
+    maxh = hue(col);
+    mins = saturation(col);
+    minx = maxx = mouseX;
+    miny = maxy = mouseY;
+    minx0 = maxx0 = mouseX;
+    miny0 = maxy0 = mouseY;
     
     selpix = 1;
-
-    // NOTE : resetting all of selected_image pixels to transparent state
-    for(int j = 0; j < init_image.height; j++)
-      for(int i = 0; i < init_image.width; i++) {
-        selected_image.pixels[i + j * selected_image.width] = color(0, 0, 0, 0);
+    // on recommence toute la selection donc on remet tous les pixels transparents
+    for(int j=0; j<init_img.height; j++)
+      for(int i=0; i<init_img.width; i++){
+        selected_img.pixels[i+j*selected_img.width] = color(0,0,0, 0);
       }
-    selected_image.pixels[mouseX + mouseY * selected_image.width] = color(0, 0, 0);
+    selected_img.pixels[mouseX+mouseY*selected_img.width] = color(0,0,0);
   }
-  else if (mouseButton == RIGHT /*|| (mouseButton == LEFT && alt*/)) {
-    // NOTE : if started a drag & drop with the right mouse button or Alt for macOS
+  else if (mouseButton == RIGHT || (mouseButton == LEFT && alt)){
+    // si on commence un drag & drop avec le bouton droit (ou avec la touche alt pour les macs)
     iniMouseX = mouseX;
     iniMouseY = mouseY;
   }
 }
 
-void mouseDragged() {
-  if (mouseButton == LEFT) {
+void mouseDragged(){
+  if (mouseButton == LEFT){
     // on rajoute un point de drag&drop dans la selection
-    // NOTE : image.pixels returns a 1 dimesion array with the image pixels
-    col = init_image.pixels[mouseX + mouseY * init_image.width];
-    maxRed = minRed = red(col);
-    maxGreen = minGreen = green(col);
-    maxBlue = minBlue = blue(col);
-    minHue = hue(col);
-    maxHue = hue(col);
-    minSaturation = saturation(col);
-    minX = maxX = mouseX;
-    minY = maxY = mouseY;
+    col = init_img.pixels[mouseX+mouseY*init_img.width];
+    maxr = minr = red(col);
+    maxg = ming = green(col);
+    maxb = minb = blue(col);
+    minh = hue(col);
+    maxh = hue(col);
+    mins = saturation(col);
+    minx = maxx = mouseX;
+    miny = maxy = mouseY;
     
     // on ne garde en memoire que les 25 derniers points pour pas trop 
     // rajouter de travail
-    if (lastMousePoints.size() > 25)
+    if (lastMousePoints.size()>25)
       lastMousePoints.remove(lastMousePoints.size()-1);
     lastMousePoints.add(0,new PVector(mouseX, mouseY, col));
     
@@ -129,27 +120,27 @@ void mouseDragged() {
     for(PVector v:lastMousePoints){
       int x0 = int(v.x);
       int y0 = int(v.y);
-      col = init_image.pixels[x0+y0*init_image.width];
-      minRed = min(minRed, red(col));
-      maxRed = max(maxRed, red(col));
-      minGreen = min(minGreen, green(col));
-      maxGreen = max(maxGreen, green(col));
-      minBlue = min(minBlue, blue(col));
-      maxBlue = max(maxBlue, blue(col));
+      col = init_img.pixels[x0+y0*init_img.width];
+      minr = min(minr, red(col));
+      maxr = max(maxr, red(col));
+      ming = min(ming, green(col));
+      maxg = max(maxg, green(col));
+      minb = min(minb, blue(col));
+      maxb = max(maxb, blue(col));
       
-      minHue = min(minHue, hue(col));
-      maxHue = max(maxHue, hue(col));
-      minSaturation = min(minSaturation, saturation(col));
-      maxSaturation = max(maxSaturation, saturation(col));
+      minh = min(minh, hue(col));
+      maxh = max(maxh, hue(col));
+      mins = min(mins, saturation(col));
+      maxs = max(maxs, saturation(col));
       minbr = min(minbr, brightness(col));
       maxbr = max(maxbr, brightness(col));
       
-      minX = min(minX, x0);
-      maxX = max(maxX, x0);
-      minY = min(minY, y0);
-      maxY = max(maxY, y0);
+      minx = min(minx, x0);
+      maxx = max(maxx, x0);
+      miny = min(miny, y0);
+      maxy = max(maxy, y0);
       
-      selected_image.pixels[x0+y0*selected_image.width] = color(0,0,128); 
+      selected_img.pixels[x0+y0*selected_img.width] = color(0,0,128); 
       selpix++;      
     }
    
@@ -160,20 +151,20 @@ void mouseDragged() {
       // on recommence en boucle tant que ca rajoute des points
       iniselpix = selpix;
       selpix = 0;
-      for(int j=max(0,minY-1); j<=min(maxY+1,init_image.height-1); j++)
-        for(int i=max(0,minX-1); i<=min(maxX+1,init_image.width-1); i++){
-          int p = init_image.pixels[i+j*init_image.width];
-          boolean tsel = j>minY-1 && j>0 && alpha(selected_image.pixels[i+(j-1)*selected_image.width])>128;
-          boolean bsel = j<maxY+1 && j<init_image.height-1 && alpha(selected_image.pixels[i+(j+1)*selected_image.width])>128;
-          boolean lsel = i>minX-1 && i>0 && alpha(selected_image.pixels[(i-1)+j*selected_image.width])>128;
-          boolean rsel = i<maxX+1 && i<init_image.width-1 && alpha(selected_image.pixels[(i+1)+j*selected_image.width])>128;
+      for(int j=max(0,miny-1); j<=min(maxy+1,init_img.height-1); j++)
+        for(int i=max(0,minx-1); i<=min(maxx+1,init_img.width-1); i++){
+          int p = init_img.pixels[i+j*init_img.width];
+          boolean tsel = j>miny-1 && j>0 && alpha(selected_img.pixels[i+(j-1)*selected_img.width])>128;
+          boolean bsel = j<maxy+1 && j<init_img.height-1 && alpha(selected_img.pixels[i+(j+1)*selected_img.width])>128;
+          boolean lsel = i>minx-1 && i>0 && alpha(selected_img.pixels[(i-1)+j*selected_img.width])>128;
+          boolean rsel = i<maxx+1 && i<init_img.width-1 && alpha(selected_img.pixels[(i+1)+j*selected_img.width])>128;
           
-          float avgr = (minRed+maxRed)/2, gapr = (maxRed-minRed)/2;
-          float avgg = (minGreen+maxGreen)/2, gapg = (maxGreen-minGreen)/2;
-          float avgb = (minBlue+maxBlue)/2, gapb = (maxBlue-minBlue)/2;
+          float avgr = (minr+maxr)/2, gapr = (maxr-minr)/2;
+          float avgg = (ming+maxg)/2, gapg = (maxg-ming)/2;
+          float avgb = (minb+maxb)/2, gapb = (maxb-minb)/2;
           
-          float avgh = (minHue+maxHue)/2, gaph = (maxHue-minHue)/2;
-          float avgs = (minSaturation+maxSaturation)/2, gaps = (maxSaturation-minSaturation)/2;
+          float avgh = (minh+maxh)/2, gaph = (maxh-minh)/2;
+          float avgs = (mins+maxs)/2, gaps = (maxs-mins)/2;
           float avgbr = (minbr+maxbr)/2, gapbr = (maxbr-minbr)/2;
           
           float tol = 1.0+((tsel?0.05:0) + (bsel?0.05:0) + (lsel?0.05:0) + (rsel?0.05:0));
@@ -184,16 +175,16 @@ void mouseDragged() {
               saturation(p) >=avgs-gaps*tol && saturation(p) <=avgs+gaps*tol &&
               brightness(p) >=avgbr-gapbr*tol && brightness(p) <=avgbr+gapbr*tol && 
               (tsel || bsel || lsel || rsel)){
-            selected_image.pixels[i+j*selected_image.width] = color(0,0,128); //etape2.1
+            selected_img.pixels[i+j*selected_img.width] = color(0,0,128); //etape2.1
             selpix++;
-            minX = min(minX, i);
-            maxX = max(maxX, i);
-            minY = min(minY, j);
-            maxY = max(maxY, j);
-            minX0 = min(minX0, i);
-            maxX0 = max(maxX0, i);
-            minY0 = min(minY0, j);
-            maxY0 = max(maxY0, j);            
+            minx = min(minx, i);
+            maxx = max(maxx, i);
+            miny = min(miny, j);
+            maxy = max(maxy, j);
+            minx0 = min(minx0, i);
+            maxx0 = max(maxx0, i);
+            miny0 = min(miny0, j);
+            maxy0 = max(maxy0, j);            
           }
         }      
     }
@@ -201,13 +192,13 @@ void mouseDragged() {
     //etape2.2
     // ici on peut bidouiller les couleurs des pixels selectionnes
     // en fonction de leur position ou de leur voisin
-    for (int j = 1; j < selected_image.height - 1; j++)
-      for (int i = 1; i < selected_image.width - 1; i++){
-        if (alpha(selected_image.pixels[i+j*selected_image.width]) > 128)
-          selected_image.pixels[i+j*selected_image.width] = color(128,0,0, 255);
+    for (int j=1; j<selected_img.height-1; j++)
+      for (int i=1; i<selected_img.width-1; i++){
+        if (alpha(selected_img.pixels[i+j*selected_img.width])>128)
+          selected_img.pixels[i+j*selected_img.width] = color(0,0,0, 255);
       }
     
-    selected_image.updatePixels();
+    selected_img.updatePixels();
     
   }
 }
@@ -215,16 +206,5 @@ void mouseDragged() {
 void mouseReleased(){
   if (iniMouseX>=0){
    //etape 3 et 4
-   hair_image.beginDraw();
-   //hair_image.noFill();
-   for (int j = 1; j < selected_image.height - 1; j++)
-      for (int i = 1; i < selected_image.width - 1; i++){
-        if (alpha(selected_image.pixels[i+j*selected_image.width]) > 128 ){
-            hair_image.line(i, j, mouseX, mouseY);
-            // print(i);
-        }
-      }
-   //hair_image.line(120, 80, 340, 300);;
-   hair_image.endDraw();
   }
 }
