@@ -15,6 +15,20 @@ int totalPixels;
 color averageSelectionColor;
 int redAvg, blueAvg, greenAvg;
 
+
+/**
+* @return 1 ou -1 choisi au random
+*/
+int random_sign() {
+  if (int(random(0, 3)) == 1) {
+    return -1;
+  }
+  else {
+    return 1;
+  }
+}
+
+
 void setup() {
   size(820,761);
   
@@ -233,12 +247,36 @@ void mouseReleased(){
    //etape 3 et 4
    hair_image.beginDraw();
 
-    stroke(color(255, 0, 0), 255);
+    // stroke(color(255, 0, 0), 255);
 
     for (int i = 0; i < selected_image.width; i++)
       for (int j = 0; j < selected_image.height; j++) {
-        if (int(random(0, 100))%100 == 0 && alpha(selected_image.pixels[i + j*selected_image.width]) > 128)
-          hair_image.line(i, j, mouseX, mouseY);
+        if (int(random(0, 100))%105 == 0 && alpha(selected_image.pixels[i + j*selected_image.width]) > 128) {
+
+          int uX, uY, n = 20;
+          int iX = (mouseX-i) / n,
+              iY = (mouseY-j) / n;
+          if (iY == 0) continue;
+          int tX, tY;
+          int dotX = i, dotY = j;
+
+          hair_image.beginShape();
+            hair_image.stroke(init_image.get(i, j), 128);
+            hair_image.strokeWeight(2);
+            hair_image.noFill();
+            hair_image.vertex(dotX, dotY);
+            for (int k = 0; k < n; k++) {
+              uX = 4;
+              uY = -uX * abs(iX/iY);
+              int _sign = random_sign();
+              tX = iX + _sign*uX;
+              tY = iY + _sign*uY;
+              dotX = tX + dotX;
+              dotY = tY + dotY;
+              hair_image.vertex(dotX, dotY);
+            }
+          hair_image.endShape();
+        }
       }
 
 
