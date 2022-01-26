@@ -215,16 +215,23 @@ void mouseDragged() {
 void mouseReleased(){
   if (iniMouseX>=0){
    //etape 3 et 4
-   hair_image.beginDraw();
-   //hair_image.noFill();
+   img3.beginDraw();
+   //img3.noFill();
    for (int j = 1; j < selected_image.height - 1; j++)
       for (int i = 1; i < selected_image.width - 1; i++){
         if (alpha(selected_image.pixels[i+j*selected_image.width]) > 128 ){
-            hair_image.line(i, j, mouseX, mouseY);
-            // print(i);
+            img3.line(i, j, mouseX, mouseY);
         }
       }
-   //hair_image.line(120, 80, 340, 300);;
-   hair_image.endDraw();
+   img3.endDraw();
+
+   img3.beginDraw();
+   img3.line(i, j, mouseX, mouseY);
+   img3.endDraw();
   }
 }
+
+noFill();
+vertex(i, j);
+vertex(something, otherthing);
+vertex(mouseX, mouseY);
