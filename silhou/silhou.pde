@@ -11,6 +11,8 @@ int minx0, miny0, maxx0, maxy0;
 ArrayList<PVector> lastMousePoints = new  ArrayList<PVector>();
 boolean alt = false;
 
+int N  = 20;
+
 
 /**
 * @return 1 ou -1 choisi au random
@@ -68,6 +70,22 @@ void draw() {
 void keyPressed() {
   if (key == CODED && keyCode == ALT)
     alt=true;
+  if (key == '+') {
+    N += 10;
+    print("Increased the value of N by 10\nCurrent value: ");
+    print(N);
+    print("\n");
+  }
+  if (key == '-') {
+    if (N == 10) {
+      print("N cannot be 0\n");
+      } else {
+    N -= 10;
+    print("Decreased the value of N by 10\nCurrent value: ");
+    print(N);
+    print("\n");
+    }
+  }
 }
 
 void keyReleased() {
@@ -238,25 +256,21 @@ void mouseReleased(){
     for (int i = 0; i < selected_image.width; i++)
       for (int j = 0; j < selected_image.height; j++) {
         if (int(random(0, 100))%105 == 0 && alpha(selected_image.pixels[i + j*selected_image.width]) > 128) {
-
-          int uX, uY, n = 20;
-          int iX = (mouseX-i) / n,
-              iY = (mouseY-j) / n;
-          if (iY == 0) continue;
-          int dotX = i, dotY = j;
+          PVector u = new PVector(0, 0),
+                  i_v = new PVector((mouseX-i) / N, (mouseY-j) / N),
+                  dot = new PVector(i, j);
+          if (i_v.y == 0) continue;
 
           hair_image.beginShape();
             hair_image.stroke(init_image.get(i, j), 128);
             hair_image.strokeWeight(2);
             hair_image.noFill();
-            hair_image.vertex(dotX, dotY);
-            for (int k = 0; k < n; k++) {
-              uX = 4;
-              uY = -uX * abs(iX/iY);
-              int _sign = random_sign();
-              dotX = iX + _sign*uX + dotX;
-              dotY = iY + _sign*uY + dotY;
-              hair_image.vertex(dotX, dotY);
+            hair_image.vertex(dot.x, dot.y);
+            for (int k = 0; k < N; k++) {
+              u.set(4, -4*abs(i_v.x/i_v.y));
+              dot.add(i_v);
+              dot.add(u.mult(random_sign()));
+              hair_image.vertex(dot.x, dot.y);
             }
           hair_image.endShape();
         }
