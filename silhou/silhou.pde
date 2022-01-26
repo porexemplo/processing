@@ -10,10 +10,6 @@ int minx, miny, maxx, maxy;
 int minx0, miny0, maxx0, maxy0;
 ArrayList<PVector> lastMousePoints = new  ArrayList<PVector>();
 boolean alt = false;
-int totalPixels;
-
-color averageSelectionColor;
-int redAvg, blueAvg, greenAvg;
 
 
 /**
@@ -212,8 +208,6 @@ void mouseDragged(){
     // en fonction de leur position ou de leur voisin
 
 
-    totalPixels = selected_image.width*selected_image.height;
-
     for (int j=1; j<selected_image.height-1; j++)
       for (int i=1; i<selected_image.width-1; i++){
         if (alpha(selected_image.pixels[i+j*selected_image.width]) > 128) {
@@ -225,9 +219,6 @@ void mouseDragged(){
             255 - blue(pixelColor),
             255
           );
-          redAvg += red(pixelColor);
-          blueAvg += blue(pixelColor);
-          greenAvg += green(pixelColor);
           // selected_image.pixels[i + j*init_image.width] = color(0, 0, 0, 255);
         }
       }
@@ -235,11 +226,6 @@ void mouseDragged(){
     selected_image.updatePixels();
     
   }
-  averageSelectionColor = color(
-    redAvg / totalPixels,
-    blueAvg / totalPixels,
-    greenAvg / totalPixels 
-  );
 }
 
 void mouseReleased(){
@@ -257,7 +243,6 @@ void mouseReleased(){
           int iX = (mouseX-i) / n,
               iY = (mouseY-j) / n;
           if (iY == 0) continue;
-          int tX, tY;
           int dotX = i, dotY = j;
 
           hair_image.beginShape();
@@ -269,17 +254,13 @@ void mouseReleased(){
               uX = 4;
               uY = -uX * abs(iX/iY);
               int _sign = random_sign();
-              tX = iX + _sign*uX;
-              tY = iY + _sign*uY;
-              dotX = tX + dotX;
-              dotY = tY + dotY;
+              dotX = iX + _sign*uX + dotX;
+              dotY = iY + _sign*uY + dotY;
               hair_image.vertex(dotX, dotY);
             }
           hair_image.endShape();
         }
       }
-
-
    hair_image.endDraw();
   }
 }
