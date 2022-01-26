@@ -86,6 +86,9 @@ void keyPressed() {
     print("\n");
     }
   }
+  if (key == 'r') {
+    setup();
+  }
 }
 
 void keyReleased() {
