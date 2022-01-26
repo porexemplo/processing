@@ -1,0 +1,1 @@
+- En clignotant, ça prennait parfois la couleur de l'image séléctionnée.
