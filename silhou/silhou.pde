@@ -237,7 +237,7 @@ void mouseDragged(){
           selected_image.pixels[i+j*selected_image.width] = color(
             255 - red(pixelColor),
             255 - green(pixelColor),
-            255 - blue(pixelColor),
+            abs(128 - blue(pixelColor)),
             255
           );
           // selected_image.pixels[i + j*init_image.width] = color(0, 0, 0, 255);
@@ -259,21 +259,21 @@ void mouseReleased(){
     for (int i = 0; i < selected_image.width; i++)
       for (int j = 0; j < selected_image.height; j++) {
         if (int(random(0, 100))%105 == 0 && alpha(selected_image.pixels[i + j*selected_image.width]) > 128) {
-          PVector u = new PVector(0, 0),
-                  i_v = new PVector((mouseX-i) / N, (mouseY-j) / N),
-                  dot = new PVector(i, j);
-          if (i_v.y == 0) continue;
+          PVector diversion_rate = new PVector(0, 0),
+                  main_vector = new PVector((mouseX-i) / N, (mouseY-j) / N),
+                  next_dot = new PVector(i, j);
+          if (main_vector.y == 0) continue;
 
           hair_image.beginShape();
             hair_image.stroke(init_image.get(i, j), 128);
             hair_image.strokeWeight(2);
             hair_image.noFill();
-            hair_image.vertex(dot.x, dot.y);
+            hair_image.vertex(next_dot.x, next_dot.y);
             for (int k = 0; k < N; k++) {
-              u.set(4, -4*abs(i_v.x/i_v.y));
-              dot.add(i_v);
-              dot.add(u.mult(random_sign()));
-              hair_image.vertex(dot.x, dot.y);
+              diversion_rate.set(4, -4*abs(main_vector.x/main_vector.y));
+              next_dot.add(main_vector);
+              next_dot.add(diversion_rate.mult(random_sign()));
+              hair_image.vertex(next_dot.x, next_dot.y);
             }
           hair_image.endShape();
         }
